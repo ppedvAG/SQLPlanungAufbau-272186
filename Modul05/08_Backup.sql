@@ -1,187 +1,164 @@
-/*
-
-Wiederherstellungsmodel oder RecoveyModel
-
-1. Einfach (Simple)
-	..werden TX werden protokolliert, aber nach COMMIT oder ROllACB aus dem Tlog entfernt
-	- kann nicht gesichert
-	-- Testumgebung
-2. Massenprotokolliert (Bulk)
-	-- merkt sich die TX und es wirds nichts gelöscht
-	-- man muss das Tlog sichern, um Platz zu schaffen, weil nur die TLOG Sicherung das TLOG leert
-	-- man kann auf Sekunden restoren, aber nur wenn kein BULK BEfehl vorkam
-3. Vollständige (Full)
-	-- es wird alles exakt protkolliert
-	-- man kann auf Sek restoren
-	-- Produktion
+/* BACKUP
 
 
+1. DB korrupt
+2. Daten versehentlich verfälscht
+3. Tabelle gelöscht
+4. Server tot-- > DB Backup auf anderen Server restoren
+5. Server tot--> HDD sind noch ok
+  a) beide Dateien (mdf und ldf) sind vorhanden
+  b) mdf vohanden , aber ldf ist futsch
+6. Wenn ich wüsste, dass gleich was passiert
+   
 
-Sicherungsarten  
-Vollständig V
-	-- sichert alle Dateien der DB (Pfade und Größe)
-	-- Zeitpunkt
+Backuptypen:
 
-Differenz D
-	merkt isch alle Blöcke, die sich seit dem letzten V verändert haben
-	
-Tlog T
-	- Tlog merkt sich die Anweisung (I U D)
+V ollständige Sicherung
+Checkpoint
+alle Dateien gesichert inkl Pfad , Größe
+sichert einen Zeitpunkt 
+Sicherung ist online
+
+D ifferentielle Sicherung
+Checkpoint
+merkt sich alle Blöcke, die Änderungen 
+seit dem letzten V enthalten
+Sicherung ist online
+
+T ransaktionsprotkollsicherung
+Checkpoint
+merkt sich alle Anweisungen
+(wie ein Makro)
+Sicherung ist online
+mit dem T läßt sich ein beliebiger Zeitpunkt restoren
+auf Sekunde genau 
 
 
-! V  (6:00)
+Wiederherstellungsmodel
+
+Einfach 
+es werden alle TX rudimentär mitgeschrieben
+und dann gelöscht
+
+------------------
+TXUC  TXUC   TX 
+------------------
+
+dann keine Sicherung des T Log
+
+nur V und D möglich
+
+
+Massenprotokolliert
+wie Einfach
+aber es wird nichts gelöscht
+es läßt sich ein Zeitpukt restoren
+
+
+==> du musst das TLog sichern !! da es sonst permanent wächst
+
+
+Vollständig
+protokolliert umfangreich
+es schreibt mehr weg
+man kann auf die sek restoren
+
+
+--in Prodktionsumgebung mist vollständig
+
+
+ 
+
+
+
+
+! V
 	T
 	T
 	T
-		
+	 D
 	T
 	T
 	T
-!		
-!	T
-!	T
-!	T (14:30)
-
-
-Restore des V ist der schnelleste Restore
-Das T kann solange brauchen wie das Sicherungsinterval des T ist
-Das D sichert und verkürzt des Restore (ungemein)
-
-Planen: 
-Zu erst das V.. So fot wie möglich
-
-Dann das T: wie lange darf die DB still stehen?
-			wieviel Datenverlust  in Zeit darf ich erleiden?
-
-Teste!!!!
-
-
-Welche Fälle gibt es eigtl , um einen Restore machen zu müssen:
-
-1. Server tot--> Restore auf anderen Server
-	1.a aber die Datenträger sind 100 ok
-	1.b nur die Datendatei ist ok, Log ist tot
-	1.c alle Dateien hinüber
-2. DB beschädigt --> Restore auf selben Server (ersetzen , weil reparieren versagt)
-3. User hat versehentlich etwas versemmelt - DB ok
-	3.a er weiss , was betroffen ist
-	3.b er weiss nicht, welche DS betroffen
-4. Wenn ich wüßte, dass gleich was passiert
+	! D
+	! T
+	! T
+	! T
 
 
 
-*/
---VOLLSICHERUNG
-BACKUP DATABASE [Northwind] TO  DISK = N'C:\_SQLBACKUP\northwind.bak' 
-	WITH NOFORMAT, NOINIT,  NAME = N'Northwind-Vollständig Datenbank Sichern', 
-	SKIP, NOREWIND, NOUNLOAD,  STATS = 10
-GO
---DIFFSICHERUNG
-BACKUP DATABASE [Northwind] TO  DISK = N'C:\_SQLBACKUP\northwind.bak' 
-	WITH  DIFFERENTIAL , NOFORMAT, NOINIT,  NAME = N'Northwind-Differenziell',
-		SKIP, NOREWIND, NOUNLOAD,  STATS = 10
-GO
---LOGSICHERUNG
-BACKUP LOG [Northwind] TO  DISK = N'C:\_SQLBACKUP\northwind.bak' 
-	WITH NOFORMAT, NOINIT,  NAME = N'Northwind-Tlog', 
-		SKIP, NOREWIND, NOUNLOAD,  STATS = 10
-GO
+--Fall 2: Daten vesehentlich manipuliert
+--= Fall 3
 
 
-Wir sichern : V TTT D TTT 
+--Idee: wir stellen die DB unter anderen Namen wieder her
 
---RESTORE
+funktioniert nur, wenn wir wissen was exakt geändert wurde
 
-1. Server tot--> Restore auf anderen Server
-	1.a aber die Datenträger sind 100 ok
-		Dateien anfügen
+USE [master]
+RESTORE DATABASE [NORTHWIND2] FROM  DISK = N'C:\_SQLBackup\NORTHWIND.bak' WITH  FILE = 1,  MOVE N'NORTHWIND'
+TO N'C:\_SQLDB\NORTHWINDdsd2.mdf',  MOVE N'NORTHWIND_log'
+TO N'C:\_SQLDB\NORTHWIND2_log.ldf',  NORECOVERY,  NOUNLOAD,  STATS = 5
+RESTORE DATABASE [NORTHWIND2] FROM  DISK = N'C:\_SQLBackup\NORTHWIND.bak' WITH  FILE = 9,  NORECOVERY,  NOUNLOAD,  STATS = 5
+RESTORE LOG [NORTHWIND2] FROM  DISK = N'C:\_SQLBackup\NORTHWIND.bak' WITH  FILE = 10,  NORECOVERY,  NOUNLOAD,  STATS = 5
+RESTORE LOG [NORTHWIND2] FROM  DISK = N'C:\_SQLBackup\NORTHWIND.bak' WITH  FILE = 11,  NORECOVERY,  NOUNLOAD,  STATS = 5
+RESTORE LOG [NORTHWIND2] FROM  DISK = N'C:\_SQLBackup\NORTHWIND.bak' WITH  FILE = 12,  NOUNLOAD,  STATS = 5
 
-	1.b nur die Datendatei ist ok, Log ist tot
-	  Logdatei entfernen , dann anfügen
-	
-	1.c alle Dateien hinüber
-	--Tipp::
-	--kopiere das Backup immer dorthin , wo der Server es auch erwartet
-	-- Medium wählen und dann evtl Pfade anpassen
-
-3. User hat versehentlich etwas versemmelt - DB ok
-	3.a er weiss , was betroffen ist
-
-	.unter anderern Namen restoren (auf Pfade und DAteinamen aufpassen- müssen geändert werden)
-	!! Protkollfragmentsicherung deaktiveren
-	--> restoren mit Update / insert / Delete weiterarbeiten
-
-	3.b er weiss nicht, welche DS betroffen
-		-- Restore der DB 
-	3.b ist auch Fall 2 
-	--> DB restoren mit geringstmöglichen DAtenverlust
-
-
-
-V: 6 Uhr
-D: 10:00
-T: 10:10
-T: 10:20
-T: 10:30
-Error : 10:34
-
---Theoretisch 10:30 mit best Sicherungen Datenverlust = 3-4 min
-
---Faul: Warten auf 10:40 T 
--- damit restore von 10:33 --> Datenverlust = 6-7 min
-
---besser:
--- manuell Sicherung von 10:35  Restore von 10:33
---Verlust Dauer der tLogSicherung von 10:35 = zB 90 Sek, Backup wird online gmacht
-
--- noch besser:
--- manuell Sicherung von 10:35  Restore von 10:33 mit der Zeitachse
--- aber wir wefen die User runter  
-
---Protokollfragmentsicherung regelt.
--- Beim  Restore angeben:
-	--User von der DB trennen
-	--DB with replace
-
-
-
-	--4. Wenn ich wüsste:--> DB Momentaufnahme
-
-
-
-	-- =============================================
--- Create Database Snapshot Template
--- =============================================
-USE master
 GO
 
 
--- Create the database snapshot
-CREATE DATABASE SnapshotDBName  ON
-( 
-NAME = OrigDB, --der logische Name der Datendatei der OrigDB
-FILENAME = 'C:\_SQLDB\SnapshotDBName.mdf' )
-AS SNAPSHOT OF OrigDB;
-GO
+Fall 4: Bak DAtein in Backup Ordner legen.
+	    evtl Pfade korrigieren
 
-CREATE DATABASE SN_Northwind_1152 ON
-(
-NAME= Northwind,
-FILENAME = 'C:\_SQLDB\SN_Northwind_1152.mdf'
-)
-AS SNAPSHOT OF Northwind;
+Fall 5 : DB Dateien konnten vom toten Server gerettet werden
+
+DB Dateien wieder anfügen
+Fehlendes Logfile kann automatisch ersetzt werden (bzw wird erstellt)
+
+
+
+--Fall 1 : DB muss tats direkt restored werden.. DB läuft
+
+--Es soll so wenig wie möglich DAtenverlust entstehen
+
+--Letzte TLog:             11:00
+--nächste Sicherung Tlog : 12:00
+
+--Error um : 11:17
+--Aktuelle Zeit : 11:21
+
+--Idee Nr1: Restore von 11 Uhr --> Verlust: 21 min
+
+--Idee2: Wir warten bis 12 Uhr.  
+		Autom. Logsicherung läuft
+		Restore von 11:16
+		Verlust: im Backup fast alles da
+		DB aber ZUstand 11:16
+
+-- Idee 3: 
+		manuelle Sicherung um 11:21..dauert 5 min 
+		Restore von 11:16:59
+		Verlust 5 min, weil Sicherung online lief und Leute weiter gearbeitet haben
+
+-- Idee 4:
+         User von der DB runterwerfen
+		 Sicherung um 11:21 des Tlog
+		 Restore von 11:16:59
+
+USE [master]
+ALTER DATABASE [NORTHWIND] SET SINGLE_USER WITH ROLLBACK IMMEDIATE
+BACKUP LOG [NORTHWIND] TO  DISK = N'C:\_SQLBackup\NORTHWIND_LogBackup_2026-11-17_11-49-02.bak' WITH NOFORMAT, NOINIT,  NAME = N'NORTHWIND_LogBackup_2026-11-17_11-49-02', NOSKIP, NOREWIND, NOUNLOAD,  NORECOVERY ,  STATS = 5
+RESTORE DATABASE [NORTHWIND] FROM  DISK = N'C:\_SQLBackup\NORTHWIND.bak' WITH  FILE = 1,  NORECOVERY,  NOUNLOAD,  REPLACE,  STATS = 5
+RESTORE DATABASE [NORTHWIND] FROM  DISK = N'C:\_SQLBackup\NORTHWIND.bak' WITH  FILE = 9,  NORECOVERY,  NOUNLOAD,  STATS = 5
+RESTORE LOG [NORTHWIND] FROM  DISK = N'C:\_SQLBackup\NORTHWIND.bak' WITH  FILE = 10,  NORECOVERY,  NOUNLOAD,  STATS = 5
+RESTORE LOG [NORTHWIND] FROM  DISK = N'C:\_SQLBackup\NORTHWIND.bak' WITH  FILE = 11,  NORECOVERY,  NOUNLOAD,  STATS = 5
+RESTORE LOG [NORTHWIND] FROM  DISK = N'C:\_SQLBackup\NORTHWIND.bak' WITH  FILE = 12,  NORECOVERY,  NOUNLOAD,  STATS = 5
+RESTORE LOG [NORTHWIND] FROM  DISK = N'C:\_SQLBackup\NORTHWIND_LogBackup_2026-11-17_11-49-02.bak' WITH  NOUNLOAD,  STATS = 5,  STOPAT = N'2026-11-17T11:16:52'
+ALTER DATABASE [NORTHWIND] SET MULTI_USER
+
 GO
 
 
 
-USE MASTER
 
 
-RESTORE DATABASE NORTHWIND from database_Snapshot = 'SN_Northwind_1152' 
-
-
-
-
-
-
-		

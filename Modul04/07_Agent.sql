@@ -1,5 +1,12 @@
 /*
--
+Thema: SQL Server Agent, Auftraege und Warnungen
+Funktionsweise: Erlaeutert Auftragschritte, Zeitplaene, Proxykonten und Benachrichtigungen.
+Vorteile: Der Agent automatisiert wiederkehrende Verwaltungsaufgaben.
+Tipps: Proxykonten mit minimalen Rechten verwenden; Beispiel-Auftraege vor Produktion pruefen.
+*/
+
+/*
+--
 Agent: eig Dienst  mit eig Konto
 
 Jobs, Aufträge, Zeitpläne, Warnungen, Operatoren, Email

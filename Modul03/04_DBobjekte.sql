@@ -1,121 +1,96 @@
 /*
-Daten abfragen
-
-a) select * from tabelle join ..join..join
-
-b) select * from view
-
-c) exec procdemo  schneller weil der Plan bereits beim 2ten Aufruf vorliegt
-
-d) select * from f(wert)
-
-A b c d
-
---langsam nach schnell----------->
-d       ab            c
-
-A b c d
-
---langsam nach schnell----------->es könnte auch das passieren
-c                d       ab            
-
-
-
---------------------------
-Sicht = gemerkte Abfrage, die sich wie ein Tabelle verhält
-aber keine Daten besitzt
-kann aber INS Update und delete
-
-Prozedur
-wie Windows Batchdatei.. kann Paramter haben
-und kann verschiedenste mehrfache Anweisungen enthalten
-
-zentraler Code
-Businesslogik
-
-
-F()
-sind extrem praktisch
-
-select f(sP)m f(Wert) from f(Wert) where f(sp) < f(wert)
-
-
+Thema: Views, gespeicherte Prozeduren und Funktionen
+Funktionsweise: Zeigt wiederverwendbare Abfragen und Logik in Datenbankobjekten.
+Vorteile: Datenbankobjekte koennen Code zentralisieren und wiederverwenden.
+Tipps: Beispiele setzen die Northwind-Datenbank voraus; Namen und Schema vor Ausfuehrung pruefen.
 */
 
-use northwind;
+USE Northwind;
 GO
 
-create view vKundeumsatz
-as
-SELECT Customers.CompanyName, Customers.City, Customers.Country, 
-   Orders.OrderID, Orders.OrderDate, Orders.Freight, Orders.CustomerID, 
-   [Order Details].ProductID, [Order Details].UnitPrice, 
-   [Order Details].Quantity, Products.ProductName
-FROM Customers INNER JOIN
-   Orders ON Customers.CustomerID = Orders.CustomerID INNER JOIN
-   [Order Details] ON 
-   Orders.OrderID = [Order Details].OrderID INNER JOIN
-   Products ON [Order Details].ProductID = Products.ProductID
+-- Eine View stellt eine wiederverwendbare Abfrage wie eine Tabelle bereit.
+CREATE OR ALTER VIEW dbo.vKundeumsatz
+AS
+SELECT
+    c.CompanyName,
+    c.City,
+    c.Country,
+    o.OrderID,
+    o.OrderDate,
+    o.Freight,
+    o.CustomerID,
+    od.ProductID,
+    od.UnitPrice,
+    od.Quantity,
+    p.ProductName
+FROM dbo.Customers AS c
+INNER JOIN dbo.Orders AS o
+    ON c.CustomerID = o.CustomerID
+INNER JOIN dbo.[Order Details] AS od
+    ON o.OrderID = od.OrderID
+INNER JOIN dbo.Products AS p
+    ON od.ProductID = p.ProductID;
 GO
 
-select * from vKundeumsatz
+SELECT *
+FROM dbo.vKundeumsatz;
+GO
 
+-- Eine Prozedur kann Parameter entgegennehmen und mehrere Anweisungen kapseln.
+CREATE OR ALTER PROCEDURE dbo.procDemo
+    @par1 INT
+AS
+BEGIN
+    SET NOCOUNT ON;
 
-create proc procDemo @par1 int
-as
-SELECT Customers.CompanyName, Customers.City, Customers.Country, 
-   Orders.OrderID, Orders.OrderDate, Orders.Freight, Orders.CustomerID, 
-   [Order Details].ProductID, [Order Details].UnitPrice, 
-   [Order Details].Quantity, Products.ProductName
-FROM Customers INNER JOIN
-   Orders ON Customers.CustomerID = Orders.CustomerID INNER JOIN
-   [Order Details] ON 
-   Orders.OrderID = [Order Details].OrderID INNER JOIN
-   Products ON [Order Details].ProductID = Products.ProductID
-   where productid = @par
-INS
-UP
-DEL
-SEL
-INS
-UP
-DEL
+    SELECT
+        c.CompanyName,
+        c.City,
+        c.Country,
+        o.OrderID,
+        o.OrderDate,
+        o.Freight,
+        od.ProductID,
+        od.UnitPrice,
+        od.Quantity,
+        p.ProductName
+    FROM dbo.Customers AS c
+    INNER JOIN dbo.Orders AS o
+        ON c.CustomerID = o.CustomerID
+    INNER JOIN dbo.[Order Details] AS od
+        ON o.OrderID = od.OrderID
+    INNER JOIN dbo.Products AS p
+        ON od.ProductID = p.ProductID
+    WHERE od.ProductID = @par1;
+END;
+GO
 
+EXEC dbo.procDemo @par1 = 1;
+GO
 
-create function fRsumme(@bestnr int) returns money
-as
-Begin
-return (select sum(unitprice * quantity) from [Order Details] where
-			orderid = @bestnr)
-end
+-- Eine skalare Funktion berechnet die Summe einer Bestellung.
+CREATE OR ALTER FUNCTION dbo.fRsumme (@bestnr INT)
+RETURNS MONEY
+AS
+BEGIN
+    RETURN
+    (
+        SELECT SUM(UnitPrice * Quantity)
+        FROM dbo.[Order Details]
+        WHERE OrderID = @bestnr
+    );
+END;
+GO
 
-select dbo.fRsumme(10248)
+SELECT dbo.fRsumme(10248) AS Bestellsumme;
+GO
 
-select dbo.frsumme(orderid), * from orders 
+-- Der LIKE-Praefix kann einen Index nutzen; LEFT auf der Spalte meist nicht.
+SELECT *
+FROM dbo.Customers
+WHERE CustomerID LIKE 'A%';
 
-
-select * from [Order Details]
-
-
-select * from customers where customerid like 'A%'
-
-select * from customers where left(customerid,1) = 'A'
-
-
-
-
-
-select * from customers where customerid ='ALFKI'
-
-select * 
-from 
-		customers 
-where	customerid ='ALFKI'
-
-
-
-select * 
-from 
-		Customers 
-where	Customerid ='ALFKI'
-
+SELECT *
+FROM dbo.Customers
+WHERE CustomerID = 'ALFKI';
+GO

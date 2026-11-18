@@ -1,3 +1,9 @@
+/*
+Thema: Diagnostische Informationsabfragen fuer SQL Server 2022
+Funktionsweise: Sammelt Server-, Datenbank- und Leistungsinformationen mit T-SQL.
+Vorteile: Bietet eine breite Bestandsaufnahme fuer die gezielte Fehlersuche.
+Tipps: Nur mit passender SQL-Server-Version ausfuehren und Ergebnisse im Kontext bewerten.
+*/
 
 -- SQL Server 2022 Diagnostic Information Queries
 -- Glenn Berry 

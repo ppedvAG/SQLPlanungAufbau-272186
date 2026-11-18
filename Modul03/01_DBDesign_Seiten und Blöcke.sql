@@ -1,67 +1,41 @@
-----Seiten und Blöcke
-
---Seiten und Blöcke
-
 /*
-1  Seiten = 8192bytes
-max 8072 bytes Datenvolumen
-1 DS mit fixen Längen max 8060byts und muss in Seite passen
-max 700 DS pro Seite
-
-8 zusammenhängende Seiten = Block
-
-Seite = Page 
-Block = Extent
-
-SQL kann mur mit einem Thread eine Seite lesen. 
-Zwei Zugriffe ergeben einen Latch oder auch Spinocks
-Latch = supended, Spinlocks sind aktiv
-
-dbcc showcontig('Tabelle')
-
+Thema: Datenseiten und Extents
+Funktionsweise: Zeigt den Aufbau von Seiten und den Einfluss breiter Zeilen.
+Vorteile: Das Verstaendnis des Seitenlayouts hilft bei der Analyse von Speicher und I/O.
+Tipps: Fuer aktuelle Analysen sys.dm_db_index_physical_stats statt DBCC SHOWCONTIG nutzen.
 */
 
-use northwind;
+USE Northwind;
 GO
 
-
-create table t1 (id int identity, spx char(4100));
+-- Eine breite Zeile veranschaulicht den Einfluss des Seitenauslastungsgrads.
+DROP TABLE IF EXISTS dbo.t1;
+CREATE TABLE dbo.t1
+(
+    id INT IDENTITY(1, 1),
+    spx CHAR(4100)
+);
 GO
 
-
-insert into t1 
-select 'XY'
+-- Wiederhole den Einfuegevorgang, um ausreichend Seiten zu belegen.
+INSERT INTO dbo.t1 (spx)
+VALUES ('XY');
 GO 20000
---Zeit Messen
 
-
-dbcc showcontig('')
-
-
---besser wäre der hier.. kommt aber später nochmal...
-select * from sys.dm_db_index_physical_stats(db_id(), object_id(''), NULL, NULL, 'detailed')
+-- DBCC SHOWCONTIG ist veraltet, veranschaulicht aber die Seitenverteilung.
+DBCC SHOWCONTIG ('dbo.t1');
 GO
 
-
-
-use northwind;
+-- Die DMV liefert detaillierte physische Statistiken zum Heap.
+SELECT *
+FROM sys.dm_db_index_physical_stats
+(
+    DB_ID(),
+    OBJECT_ID(N'dbo.t1'),
+    NULL,
+    NULL,
+    N'DETAILED'
+);
 GO
 
-
-create table t1 (id int identity, spx char(4100));
-GO
-
-
-insert into t1 
-select 'XY'
-GO 20000
---Zeit Messen
-
-
-
-
-
---Warum hat die Tabelle t1 160MB , bei ca 80MB Daten
---Warum liest man aus der Tabelle KU 57000, wenn der dbcc nur 41000 Seiten angibt
-
---Weil die Seiten wg char(4100) nicht voller gemacht werden können...
+-- CHAR(4100) verhindert eine volle Belegung jeder einzelnen Datenseite.

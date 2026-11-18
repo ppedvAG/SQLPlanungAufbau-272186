@@ -1,4 +1,11 @@
---Warnungen
+/*
+Thema: SQL Server-Agent-Warnungen
+Funktionsweise: Zeigt Ereignis- und Schweregradwarnungen sowie deren Konfiguration.
+Vorteile: Fehler und definierte Ereignisse koennen zeitnah gemeldet werden.
+Tipps: Warnungen mit einem Operator verknuepfen und Benachrichtigungen gezielt testen.
+*/
+
+-- Warnungen
 
 
 /* SQL Server Alerts  bzw Warnungen
@@ -30,6 +37,7 @@ Ebenen:
 24.. desto schlimmer
 25 .. bis zum Systemausfall
 
+*/
 */
 
 select *  from xyz

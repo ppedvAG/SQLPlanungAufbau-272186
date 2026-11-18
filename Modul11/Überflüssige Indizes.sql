@@ -1,3 +1,10 @@
+/*
+Thema: Ueberfluessige Indizes identifizieren
+Funktionsweise: Verknuepft Indexmetadaten mit Nutzungsstatistiken.
+Vorteile: Weniger unnoetige Indizes reduzieren den Aufwand fuer Schreibvorgaenge.
+Tipps: DMV-Zaehler gelten seit letztem Start; Workload vor dem Loeschen pruefen.
+*/
+
 --Überflüssige Indizes identifizieren
 
 --kosten Performance bei INSERT / DELETE

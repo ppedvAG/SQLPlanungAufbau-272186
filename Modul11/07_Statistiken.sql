@@ -1,4 +1,12 @@
-﻿Wofür Statistiken?
+﻿/*
+Thema: Statistiken und Kardinalitaetsschaetzung
+Funktionsweise: Erlaeutert Histogramme, Dichtevektoren, Aktualisierung und Beispieldaten.
+Vorteile: Aktuelle Statistiken unterstuetzen den Optimierer bei der Planwahl.
+Tipps: FULLSCAN kann teuer sein; Aktualisierungsstrategie und Version der SQL-Engine beachten.
+*/
+
+/*
+Wofür Statistiken?
 SQL Server muss bevor die Abfragen ausgeführt werden eine Information besitzten,
 wieviele DAtensätze in etwa zurückkommen werden. Das ist wichtig für die Wahl 
 von IX SEEK oder doch Table_SCAN.
@@ -181,7 +189,9 @@ Bei unbekannten Werten: Dichte oder Defaultschätzung.
 Mehrspaltenstatistiken reduzieren Fehlabschätzungen bei Korrelationen.
 
 	----------------------------------------------
- --Tabelle erstellen
+*/
+
+-- Tabelle erstellen
 DROP TABLE IF EXISTS dbo.Kunden;
 CREATE TABLE dbo.Kunden
 (
@@ -211,6 +221,7 @@ WHERE Nachname = 'A...';
 ---  Histogramm
 DBCC SHOW_STATISTICS ('dbo.Kunden', '_WA_Sys_00000002_01142BA1');
 
+/*
 
 Name                          Updated              Rows    Rows Sampled    Steps    Density   ...
 ----------------------------  ------------------  ------  -------------  ------  ---------  
@@ -233,6 +244,7 @@ C...          60           100       55                    1.09
 RANGE_ROWS = Werte zwischen Buckets
 DENSITY = 1 / Anzahl unterschiedlicher Werte
 
+*/
 
  --UPDATE BIS 2014
 Änderungen > 500 + (0.20 * n)
@@ -260,6 +272,7 @@ EXEC sp_updatestats;
 
 
 
+/*
 4. Übersichtstabelle: Verhalten nach SQL-Version
 SQL-Version	Auto Update Trigger	Besonderheiten
 SQL Server ≤2014	20 % + 500 Zeilen	Feste Schwelle
@@ -269,8 +282,10 @@ SQL Server 2017+	Dynamisch (Standard)	Async Auto Update Stats stabil
 SQL Server 2019+	Dynamisch (Standard)	Adaptive Query Processing (IQP)
 SQL Server 2022	Dynamisch (Standard)	Verbesserte CE, IQP-Features
 
+*/
 
 --Wie wird gesucht?
+/*
 Exakter Treffer im Histogramm
 Selectivity = EQ_ROWS / Total_Rows
 
@@ -283,7 +298,7 @@ Selectivity ≈ Density  (oder Defaultschätzung bei alten Versionen)
 Bei mehr Spalten
 Estimated_Rows = Total_Rows * Density(col1) * Density(col2)
 
-
+*/
 
 --BSP
 /* 1) Testtabelle neu anlegen */
@@ -350,6 +365,8 @@ SELECT
 FROM sys.stats AS s
 CROSS APPLY sys.dm_db_stats_properties(s.object_id, s.stats_id) AS sp
 WHERE s.object_id = OBJECT_ID('dbo.Kunden');
+
+/*
  -------------------
  DBCC SHOW_STATISTICS zeigt Header, Dichtevektor, Histogramm.
 
@@ -382,5 +399,5 @@ Histogramm: Zeigt konkrete Häufigkeiten einzelner Werte oder Wertbereiche.
 EQ_ROWS: Exakte Treffer für Schlüsselwerte.
 
 RANGE_ROWS: Werte zwischen bekannten Schlüsseln → SQL Server interpoliert.
-
+*/
 

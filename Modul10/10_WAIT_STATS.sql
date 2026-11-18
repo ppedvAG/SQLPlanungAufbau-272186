@@ -1,3 +1,10 @@
+/*
+Thema: Wait-Statistiken
+Funktionsweise: Aggregiert Wartezeiten und filtert typische Leerlauf-Wait-Types heraus.
+Vorteile: Die Abfrage hilft, moegliche Engpaesse bei Ressourcen und Signalzeiten einzuordnen.
+Tipps: Wait-Statistiken sind kumulativ seit dem letzten Start oder Reset und brauchen Kontext.
+*/
+
 WITH [Waits] 
 AS (SELECT wait_type, wait_time_ms/ 1000.0 AS [WaitS],
           (wait_time_ms - signal_wait_time_ms) / 1000.0 AS [ResourceS],

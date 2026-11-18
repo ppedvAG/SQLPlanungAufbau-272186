@@ -1,4 +1,11 @@
 /*
+Thema: Planung und Installation von SQL Server
+Funktionsweise: Behandelt Ressourcen, Dienstkonten, Datenpfade und TempDB.
+Vorteile: Eine saubere Planung verbessert Sicherheit und Betrieb.
+Tipps: Dienstkonten mit minimalen Rechten verwenden und Daten, Log sowie Backups trennen.
+*/
+
+/*
 
 
 

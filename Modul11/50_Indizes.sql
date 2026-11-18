@@ -1,4 +1,11 @@
 /*
+Thema: SQL-Server-Indizes
+Funktionsweise: Vergleicht Clustered-, Nonclustered-, gefilterte und Columnstore-Indizes.
+Vorteile: Passende Indizes koennen Such- und Analyseabfragen beschleunigen.
+Tipps: Auch Speicher- und Schreibkosten beruecksichtigen; Vorschlaege vor Umsetzung messen.
+*/
+
+/*
 
 INDIZES
 

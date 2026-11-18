@@ -1,4 +1,11 @@
 ﻿/*
+Thema: Database Mail
+Funktionsweise: Beschreibt SMTP-Konten und -Profile fuer E-Mail-Versand aus SQL Server.
+Vorteile: Auftraege und Warnungen koennen Administratoren automatisch benachrichtigen.
+Tipps: SMTP-Zugangsdaten sicher verwalten und den Agent einem Mailprofil zuweisen.
+*/
+
+/*
 
 Databasemail
 Database Mail (Datenbank-E-Mail) ist die

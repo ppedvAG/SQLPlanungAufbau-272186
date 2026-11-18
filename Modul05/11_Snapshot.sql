@@ -1,3 +1,10 @@
+/*
+Thema: Datenbank-Snapshots
+Funktionsweise: Erstellt einen Snapshot und zeigt Abfragen sowie ein Zuruecksetzen der Quelldatenbank.
+Vorteile: Snapshots bieten einen platzsparenden, schreibgeschuetzten Zeitpunktblick.
+Tipps: Snapshots ersetzen kein Backup; beim Restore muessen aktive Verbindungen beendet sein.
+*/
+
 USE [master]
 GO
 ALTER DATABASE northwind SET  Multi_USER WITH NO_WAIT

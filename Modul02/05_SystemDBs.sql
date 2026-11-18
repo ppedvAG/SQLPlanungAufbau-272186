@@ -1,4 +1,11 @@
 /*
+Thema: Systemdatenbanken und deren Sicherung
+Funktionsweise: Beschreibt master, model, msdb und tempdb sowie Beispiel-Backups.
+Vorteile: Die Rollen der Systemdatenbanken helfen bei Wartung und Wiederherstellung.
+Tipps: master und msdb regelmaessig sichern; tempdb wird bei jedem Start neu erstellt.
+*/
+
+/*
 
 master
 "herz"

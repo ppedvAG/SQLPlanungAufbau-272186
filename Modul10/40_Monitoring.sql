@@ -1,3 +1,10 @@
+/*
+Thema: SQL-Server-Monitoring
+Funktionsweise: Nutzt DMVs, Aktivitaetsmonitor und Abfragestatistiken zur Fehlersuche.
+Vorteile: Ein strukturiertes Vorgehen trennt Server- von Datenbankengpaessen.
+Tipps: DMV-Werte sind oft kumulativ und fluechtig; fuer Trends regelmaessig erfassen.
+*/
+
 --Überwachung
 
 /*
@@ -187,10 +194,3 @@ select * from sys.dm_os_wait_stats order by 3 desc
 
 --oder auch Daten des Perfmon abfragbar
 select * from sys.dm_os_performance_counters
-
-
-
-
-
-
-*/

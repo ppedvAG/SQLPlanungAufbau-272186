@@ -1,4 +1,11 @@
---KOnfig auf dem Server
+/*
+Thema: Teilweise enthaltene Datenbanken
+Funktionsweise: Aktiviert Containment und zeigt enthaltene Benutzer und Abfragen.
+Vorteile: Benutzer koennen unabhaengiger von Instanz-Logins verwaltet werden.
+Tipps: Keine Kennwoerter im Klartext in Skripten speichern und Einschraenkungen beachten.
+*/
+
+-- Konfiguration auf dem Server
 --Erweitert: Eigenständige DB auf true
 EXEC SP_CONFIGURE 'show advanced options', 1;
 RECONFIGURE;

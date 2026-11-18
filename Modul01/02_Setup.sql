@@ -1,4 +1,11 @@
 /*
+Thema: SQL-Server-Setup und Grundeinstellungen
+Funktionsweise: Bespricht Dienstkonten, Speicher, MAXDOP, TempDB und Verzeichnisse.
+Vorteile: Konsistente Grundeinstellungen erleichtern den sicheren Betrieb.
+Tipps: Einstellungen nach Aenderungen an der VM erneut pruefen.
+*/
+
+/*
 Dienstkonten
 NT Service = Lokale sich selbstverwaltende Dienstkonten
 --kein Kennwort notwendig
@@ -124,3 +131,4 @@ HV-SQL2   fix  4500  4 kerne
 
 
 
+*/

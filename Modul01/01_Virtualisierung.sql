@@ -1,4 +1,11 @@
 /*
+Thema: SQL Server in virtuellen Maschinen
+Funktionsweise: Erlaeutert die Zuweisung von CPU, RAM und NUMA-Ressourcen.
+Vorteile: Eine passende Dimensionierung vermeidet Engpaesse durch den Hypervisor.
+Tipps: Gastbetriebssystem und Storage mit einplanen; Daten- und Log-I/O trennen.
+*/
+
+/*
 Fragen , die man sich stellen sollte:
 
 Hat die VM auch die Ressourcen
@@ -61,4 +68,5 @@ HV-SQL2: fixer Speicher 4 GB    4 CPUs
 NUMA Zuweisung beachten
 
 
+*/
 */

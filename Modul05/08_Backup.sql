@@ -1,3 +1,10 @@
+/*
+Thema: Sicherungs- und Wiederherstellungsstrategien
+Funktionsweise: Erlaeutert Voll-, Differenzial- und Protokollsicherungen sowie Restore-Ketten.
+Vorteile: Eine passende Sicherungsfolge begrenzt Datenverlust und Ausfallzeit.
+Tipps: Wiederherstellungen regelmaessig testen und Beispielpfade vor Ausfuehrung anpassen.
+*/
+
 /* BACKUP
 
 
@@ -157,8 +164,4 @@ RESTORE LOG [NORTHWIND] FROM  DISK = N'C:\_SQLBackup\NORTHWIND_LogBackup_2026-11
 ALTER DATABASE [NORTHWIND] SET MULTI_USER
 
 GO
-
-
-
-
-
+*/

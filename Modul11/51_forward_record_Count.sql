@@ -1,3 +1,10 @@
+/*
+Thema: Forwarded Records in Heap-Tabellen
+Funktionsweise: Prueft weitergeleitete Zeilen in Heaps mit sys.dm_db_index_physical_stats.
+Vorteile: Macht moeglichen zusaetzlichen I/O durch Zeilenverschiebungen sichtbar.
+Tipps: Vor strukturellen Aenderungen Fragmentierung und tatsaechliche Workload untersuchen.
+*/
+
 --Design Phänomene
 
 --forward Record Counts

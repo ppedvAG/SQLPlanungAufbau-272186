@@ -1,4 +1,11 @@
 /*
+Thema: Parallelitaet und MAXDOP
+Funktionsweise: Vergleicht Ausfuehrungszeiten und Wartezeiten bei verschiedenen MAXDOP-Werten.
+Vorteile: Messungen helfen, Parallelitaet passend zur Abfrage einzustellen.
+Tipps: Werte workloadbezogen testen; CPU-Zeit, Laufzeit und Kosten-Schwellenwert betrachten.
+*/
+
+/*
 
 MAXDOP 
 

@@ -1,10 +1,16 @@
+/*
+Thema: Fehlende Indizes untersuchen
+Funktionsweise: Liest Vorschlaege aus Ausfuehrungsplaenen und Missing-Index-DMVs.
+Vorteile: Kandidaten fuer Indexoptimierungen lassen sich gezielt finden.
+Tipps: Vorschlaege sind Hinweise, keine fertige Konfiguration; Schreibkosten und vorhandene Indizes pruefen.
+*/
 
 --Fehlende indizes feststellen
 -- Ausgabe in tatsächlichen Ausführungsplan
 --oder in select * from sys.dm_exec_cached_plans (später)
 
 
-//*
+/*
 Es ist nicht dazu gedacht, eine Indizierungskonfiguration zu optimieren.
 Es kann keine statistischen Informationen zu mehr als 500 fehlenden Indexgruppen sammeln.
 Es gibt keine Reihenfolge für in einem Index zu verwendende Spalten an.
@@ -23,7 +29,7 @@ Es gibt nur Rohdateninformationen zu Spalten zurück, bei denen möglicherweise In
 Es schlägt keine gefilterten Indizes vor.
 Es kann unterschiedliche Kosten für dieselbe fehlende Indexgruppe zurückgeben, die mehrere Male in XML-Showplans angezeigt wird.
 
-*//
+*/
 
 
 
@@ -138,7 +144,7 @@ go
 --es geht aber auch leichter..
 ---select * from sys.dm_db_missing_index_...
 
-//*
+/*
 Felhlende INdizes werden zu Gruppen zusammengefasst..wird für weitere Abfragen gebraucht (Verknüpfungen)
 select * from sys.dm_db_missing_index_groups
 
@@ -160,7 +166,7 @@ Gibt gleiche Details aus wie index_details
 select * from sys.dm_db_missing_index_columns
 
 
-*//
+*/
 
 
 

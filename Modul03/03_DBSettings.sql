@@ -1,3 +1,10 @@
+/*
+Thema: Datenbankeinstellungen
+Funktionsweise: Zeigt beispielhafte ALTER-DATABASE- und Datenbankkonfigurationsoptionen.
+Vorteile: Optionen wie Snapshot-Isolation und MAXDOP lassen sich datenbankbezogen steuern.
+Tipps: Einstellungen vor produktivem Einsatz auf Auswirkungen und Verfuegbarkeit pruefen.
+*/
+
 use [master];
 GO
 

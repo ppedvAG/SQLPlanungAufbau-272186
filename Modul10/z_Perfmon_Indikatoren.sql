@@ -1,74 +1,48 @@
+/*
+Thema: Performance-Monitor-Indikatoren
+Funktionsweise: Erlaeutert wichtige Windows- und SQL-Server-Leistungsindikatoren.
+Vorteile: Perfmon kann Betriebssystem- und SQL-Metriken gemeinsam ueber Zeit aufzeichnen.
+Tipps: Einzelne Schwellenwerte nie isoliert bewerten, sondern mit Workload und Verlauf vergleichen.
+*/
 
-andreasr@ppedv.de
-
+/*
 Prozessor: Prozessorzeit
-Diese sollte natürlich nicht auf Dauer allzu hoch sein. Messunen
-über 50% bis 60%, sollten abgeklärt werden (Auslagerungen, Kompilierungen etc)
+------------------------
+Eine dauerhaft hohe Prozessorzeit sollte untersucht werden. Moegliche Ursachen sind
+Kompilierungen, Auslagerungen oder eine hohe Abfragelast.
 
-PhysicalDisk: AverageDiskQueueLength
-Dieser Wert sollte auf Dauer nicht über 2 sein. Punktuell über einen kürzeren Zeitraum kann ein Wert
-von bspw 200 auch normal sein...
-Der Wert gibt nämlich an, ob der physik. Datenträger Daten schnell genug wegschreiben kann.
+PhysicalDisk: Average Disk Queue Length
+---------------------------------------
+Der Wert beschreibt ausstehende I/O-Anforderungen. Kurzzeitige Spitzen sind nicht
+automatisch ein Problem; Datentraeger und Latenz gemeinsam beurteilen.
 
-Speicher: Seiten/sec
-Seiten, die entweder vom Speicher auf den Datenträger geschrieben werden oder davon gelesen und in den Sepicher geschrieben werden. Der Wert sollte auf Dauer kleiner als 20 sein.
+Memory: Pages/sec
+-----------------
+Dieser Zaehler zeigt Seitenbewegungen zwischen Arbeitsspeicher und Datentraeger.
+Ein dauerhaft hoher Wert kann auf Speicherdruck hinweisen.
 
-BufferManager: BufferCacheHitRatio
-Die %-Quote gibt an, wieviel der angefragten Daten (Seiten) aus dem Speichercache 
-geholt werden können. Der Wert sollte größer 90% sein. Dadurch, 
-dass der SQL Server jede Menge ´Read Ahead Vorgänge erzeugt,
-ist der Wert nicht allzuaussagekräftig. Bereits nach Start des SQL Dienstes 
-weist er einen Wert von kanpp unter 100% aus… obwohl noch keine Daten abgefragt wurden??!!
+SQLServer: Buffer Manager: Buffer cache hit ratio
+-------------------------------------------------
+Der Zaehler beschreibt, wie oft angeforderte Seiten aus dem Buffer Pool bedient
+werden. Er ist allein kein verlaesslicher Indikator fuer ausreichenden Arbeitsspeicher.
 
-Plan Cache: Trefferquote
-Jede Frage benötigt einen Ausführungsplan. Im günstigsten Fall liegt dieser bereits vor. 
-Falls nicht, muss ein neuer Plan erstellt und kompiliert werden. 
-Das kostet Prozessorzeit.
-Falls also die Prozessorleistung sehr hoch ist, sollten sie diesen Wert und 
-Transactions / sec untersuchen. Die Trefferquote sollte so hoch wie möglich sein.
+SQLServer: Buffer Manager: Page life expectancy
+-----------------------------------------------
+Die Verweildauer von Seiten im Buffer Pool ist im Verlauf und zusammen mit anderen
+Kennzahlen zu beurteilen. Ein einzelner Grenzwert ist keine allgemeingueltige Diagnose.
 
-GenerelStatitics: 
-User Connections
-Anzahl der Benutzerverbindungen
-Blockierte Prozesse
-Anzahl der Benutzerverbindungen
+SQLServer: SQL Statistics: Compilations/sec und Re-Compilations/sec
+-------------------------------------------------------------------
+Viele Kompilierungen koennen CPU kosten. Abfrageparametrisierung und Plan-Wiederverwendung
+koennen helfen; Recompilierungen haben jedoch auch sinnvolle Ausloeser.
 
-SQL Memory Manger:
-Freier Speicher
-Zielspeicher ist übrgens bei MAX Memory aus den Serversettings
+SQLServer: General Statistics: User Connections
+-----------------------------------------------
+Zeigt die Anzahl der Benutzerverbindungen. Zusammen mit Batch Requests/sec laesst
+sich die aktuelle Auslastung besser einordnen.
 
-Puffer Manager: Page Life Expectancy  mind 300ssek lt MS
-Seiten werden in den Speicher geladen, um die Requests der Clients schnell
-bedienen zu können. Die gecachten Seiten können aufgrund von zu wenig Platz 
-zugunsten anderer Seiten aus dem Cache entfernt werden. 
-Der Wert sollte nicht unter 300 liegen. Sonst haben Sie zu wenig Hauptspeicher
-Ein Sägezhanmuster nach Neustart des SQL Servs ist durchaus normal.
-Neue Daten senken den Schnitt..
-
-
-SQL Statistics: Kompilierungen /sec
-Ausführungspläne bedürfen einer kompilierung und evtl auch einer Recompilierung. 
-Diese führt zu einer höheren CPU Last. Sollte dieser Wert sich erhöhen, können Sie evtl durch paramtriesierung ihrer Abfragen eine Verbesserung erreichen.
-
-SQL Statistics: Recompilierungen /sec
-Dieser Wert steigt, sobald kompilierte Pläne durch verschiedene SET Einstellungen erneut kompiliert werden müssen.
-
-SQL Statistics:
-Batchanforderungen pro Sekunde
-Was muss der SQL Server aktuell leisten ..bei wieviel Usern
-
-SQL Benutzerdefinierbar: User Counter 1 (bis 10)
-Ein Indikator der mir persönlich sehr gut gefällt. Übergibt man der sp_Usercounter1 eine ganze Zahl  so wird diese sofort im Systemmonitor dargestellt. SO ließe sich z.B. der Tagesumsatz im Verhältnis zur CPU oder Speicher darstellen. In Worten: Ab einem bestimmten  Umsatz proTag braucht man eine besser CPU. 
-
-SQL Locks: durschnittliche Wartezeit (ms)
-
-SQL Latches:
-Durchschnittliche Wartezeit (ms)
-Greift ein Thread auf eine Seite zu, dann muss ein anderer Prozess, 
-der auf die gleiche Seite zugreifen möchte, auf diesen Warten. 
-Man könnte sie auch Systemlocks nennen..:-)
-
-SQL 
-
-
-
+SQLServer: Locks und Latches
+----------------------------
+Lange Wartezeiten koennen auf Sperrkonflikte oder konkurrierende Zugriffe auf interne
+Ressourcen hindeuten. Die Ursache sollte mit DMVs oder Extended Events untersucht werden.
+*/

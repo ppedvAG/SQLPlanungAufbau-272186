@@ -2,12 +2,17 @@
 
 Kursrepository zum Kurs **SQL Server – Planung, Aufbau und Verwaltung** der ppedv AG.
 
-## Inhaltsverzeichnis
+## Kursinhalt – Übersicht der Module
 
-- [Modul 01 – Planung und Installation](./Modul01/)
-- [Modul 02 – Systemdatenbanken](./Modul02/)
-- [Modul 03 – Datenbankdesign und Einstellungen](./Modul03/)
-- [Modul 04 – SQL Server Agent und Benachrichtigungen](./Modul04/)
-- [Modul 05 – Sicherung und Wiederherstellung](./Modul05/)
-- [Modul 10 – Monitoring und Diagnose](./Modul10/)
-- [Modul 11 – Indizes und Statistiken](./Modul11/)
+| Modul | Thema | Inhalt |
+|-------|-------|--------|
+| [Modul 01](./Modul01/) | Installation & Konfiguration | SQL Server Installation, Virtualisierung, Setup-Skripte, MAXDOP-Konfiguration |
+| [Modul 02](./Modul02/) | Systemdatenbanken | Überblick und Verwaltung der SQL Server-Systemdatenbanken |
+| [Modul 03](./Modul03/) | Datenbankdesign & Einstellungen | Seiten und Blöcke, Datenbankeinstellungen, Datenbankobjekte |
+| [Modul 04](./Modul04/) | SQL Server Agent | Operatoren, Agent-Jobs, Datenbank-Mail, Warnungen und Alerts |
+| [Modul 05](./Modul05/) | Backup & Wiederherstellung | Backup-Strategien, Snapshots, Contained Databases |
+| Modul 06 | Sicherheit & Benutzerverwaltung | Benutzer, Logins, verwaiste Benutzer, sp_helprevlogin |
+| Modul 08 | Migration & Upgrades | Migrationsstrategien und Versionsupdates |
+| Modul 09 | Automatisierung & Skriptierung | PowerShell, T-SQL-Automatisierung |
+| [Modul 10](./Modul10/) | Monitoring & Performance | Query Store, Wait Statistics, Perfmon, Diagnosewerkzeuge |
+| [Modul 11](./Modul11/) | Indizes & Optimierung | Indexverwaltung, Statistiken, fehlende und überflüssige Indizes, Seitenstruktur |
